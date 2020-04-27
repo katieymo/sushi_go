@@ -1,4 +1,4 @@
-#Sushi Go!
+# Sushi Go!
 
 ### Summer 2018
 
