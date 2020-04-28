@@ -1,6 +1,8 @@
 import random
 import os
 
+
+
 #game_info from https://boardgamegeek.com/boardgame/133473/sushi-go
 game_info = "\nIn this super-fast sushi card game, you are eating at a sushi restaurant\n\
 and trying to grab the best combination of sushi dishes as they whiz by.\n\
@@ -325,7 +327,7 @@ class HumanPlayer(Player):
         self.round_score = self.add_round_score(game_round)
 
         #clear the screen
-        os.system("clear")
+        clear()
     
 class ComputerPlayer(Player):
     """ComputerPlayer objects are initialized during initialization of Game object. It is a subclass of the Player class.
@@ -574,6 +576,15 @@ class Round():
                 print(player.name + ending, end = "")
             print(" had the second most maki rolls in this round.")
         print("")
+
+#define our clear function 
+def clear(): 
+    # for windows 
+    if os.name == 'nt': 
+        _ = os.system('cls') 
+    # for mac and linux(here, os.name is 'posix') 
+    else: 
+        _ = os.system('clear') 
 
 def main():              
     print(" _______  __   __  _______  __   __  ___     _______  _______  __ ")
