@@ -159,7 +159,7 @@ class Player():
     def __repr__(self):
         return self.name
     
-    def display_cards(self, name):
+    def display_cards(self, name, turn_num):
         print("")
         if self.hand == []:
             print(name + " hand is empty.")
@@ -168,7 +168,7 @@ class Player():
             count = 0
             count_words = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"]
             print(name + " hand contains the cards:")
-            for card in self.hand:
+            for card in self.hand[:turn_num]:
                 print(name + " " + count_words[count] + " card: "+ card.name + " (" + card.description + ")")
                 count += 1
     
@@ -234,7 +234,7 @@ class HumanPlayer(Player):
                       appends it to self.hand, and removes it from the pile
         take_a_turn(game = Game(obj), game_round = Round(obj), pile = Pile(obj)): prints all player hands, asks user to select a card from pile,
                     if player has a chopsticks card, asks user if they want to use it, adds points to self.round_score, calls the functions:
-                    self.display_cards(player_name), Pile.display_cards(), self.select_a_card(pile), self.add_round_score(game_round)
+                    self.display_cards(player_name, turn_num), Pile.display_cards(), self.select_a_card(pile), self.add_round_score(game_round)
     """
     def __init__(self, player_name):
         super().__init__(player_name)
@@ -267,7 +267,7 @@ class HumanPlayer(Player):
         self.hand.append(self.chosen_card)
         pile.pile.remove(self.chosen_card)        
     
-    def take_a_turn(self, game, game_round, pile):
+    def take_a_turn(self, game, game_round, pile, turn_num):
         print("")
         print("It's", self.name + "'s turn!")
         print("-"*(13+len(self.name)))
@@ -276,10 +276,10 @@ class HumanPlayer(Player):
         for player in game.players:
             if player == self:
                 continue
-            player.display_cards(player.name + "'s")
+            player.display_cards(player.name + "'s", turn_num)
             
         #print the cards in your hand
-        self.display_cards("Your")
+        self.display_cards("Your", turn_num)
 
         #print the cards in the pile
         print("\nYou are passed a pile with the cards: ")
@@ -341,7 +341,7 @@ class ComputerPlayer(Player):
     def __init__(self, player_name):
         super().__init__(player_name)
     
-    def take_a_turn(self, game, game_round, pile):
+    def take_a_turn(self, game, game_round, pile, turn_num):
         #set self.chosen_card randomly from the pile, append it to hand, remove it from pile, and add to round score and update counters
         self.chosen_card = random.sample(pile.pile, 1)[0]
         self.hand.append(self.chosen_card)
@@ -388,7 +388,7 @@ class Game():
         begin_round(round_num = round number(int), game_round = Round(obj)): resets player counters, each player takes a turn for the number
                     of cards in the pile, maki score is added to the round score, the round score is added to their game score, 
                     scoreboard is displayed to user, pudding score is added to game score after 3 rounds, functions called:
-                    Player.take_a_turn(game, game_round, pile), Player.display_cards(player_name), Round.find_most_maki(self), self.find_most_pudding()
+                    Player.take_a_turn(game, game_round, pile), Player.display_cards(player_name, turn_num), Round.find_most_maki(self), self.find_most_pudding()
         begin_game(): calls function begin_round(round_num, game_round) 3 times
     """
     def __init__(self, num_hplayers, name_hplayers, num_cplayers):
@@ -471,14 +471,14 @@ class Game():
         for n in range(game_round.num_cards):
             pile_index = 0
             for player in self.players:
-                player.take_a_turn(self, game_round, game_round.piles[pile_index])
+                player.take_a_turn(self, game_round, game_round.piles[pile_index], n)
                 pile_index += 1
             last_pile = game_round.piles.pop(-1)
             game_round.piles.insert(0, last_pile)
             
         #prints the cards in everyone's hand
         for player in self.players:
-            player.display_cards(player.name + "'s")
+            player.display_cards(player.name + "'s", game_round.num_cards)
             
         #add maki score to round score
         game_round.find_most_maki(self)
@@ -521,6 +521,7 @@ class Game():
             print(" won the game!!!")
             
     def begin_game(self):
+        clear()
         self.begin_round(1, self.rounds[0])
         self.begin_round(2, self.rounds[1])
         self.begin_round(3, self.rounds[2])
@@ -682,7 +683,8 @@ def main():
             #if there is 5 or more human players, set number of computer players to 0
             else:
                 num_computers = 0
-            
+        
+			
             #initialize a Game object and begin game
             game = Game(num_humans, human_names, num_computers)
             game.begin_game()
