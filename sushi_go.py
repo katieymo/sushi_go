@@ -16,21 +16,23 @@ a pile of cards is dealt to each player. Each player will choose a card\n\
 from their pile and reveal it in their hand. The pile of cards is\n\
 passed to the next player until all piles are empty. The round ends and\n\
 scores are calculated according to the description of each card.\n\n\
-Card description summary:\n\
-Maki Rolls: Player with the most rolls at the end of the round gains\n\
-    6 points, second most rolls gains 3 points, and ties are split\n\
-Tempura: A set of 2 gains 5 points, otherwise no points are awarded\n\
-Sashimi: A set of 3 gains 10 points, otherwise no points are awarded\n\
-Dumplings: 1, 2, 3, 4, and 5+ dumpling cards gain 1, 3, 6, 10, 15 \n\
-    points, respectively\n\
-Nigiri: A squid nigiri gains 3 points, salmon nigiri gains 2 points,\n\
-    and egg nigiri gains 1 point\n\
-Wasabi: A wasabi card triples the value of the next nigiri you select\n\
-Chopsticks: You may use a chopsticks card on a later turn to swap for\n\
-    two cards\n\
-Puddings: Player with the most puddings at the end of 3 rounds gains\n\
-    6 points, the least puddings loses 6 points, and ties are split\n\
-    (no points are lost for games with 2 players)\n"
+-------------------------------------------------------------------------\n\
+Card description summary:\n\n\
+*Maki Rolls: Player with the most rolls at the end of the round gains 6\n\
+             points, second most rolls gains 3 points, and ties are split\n\n\
+*Tempura: A set of 2 gains 5 points, otherwise no points are awarded\n\n\
+*Sashimi: A set of 3 gains 10 points, otherwise no points are awarded\n\n\
+*Dumplings: 1, 2, 3, 4, and 5+ dumpling cards gain 1, 3, 6, 10, 15\n\
+            points, respectively\n\n\
+*Nigiri: A squid nigiri gains 3 points, salmon nigiri gains 2 points,\n\
+         and egg nigiri gains 1 point\n\n\
+*Wasabi: A wasabi card triples the value of the next nigiri you select\n\n\
+*Chopsticks: You may use a chopsticks card on a later turn to swap for\n\
+             two cards\n\n\
+*Puddings: Player with the most puddings at the end of 3 rounds gains 6\n\
+           points, the least puddings loses 6 points, and ties are split\n\
+           (no points are lost for games with 2 players)\n\
+-------------------------------------------------------------------------\n"
 
 #dictionary of key = card name and value = [card description, number in deck]
 card_info = {"Tempura": ["x2 = 5", 14], "Sashimi": ["x3 = 10", 14], "Dumpling": ["1 3 6 10 15", 14], 
@@ -563,14 +565,17 @@ class Round():
             print(" had the most maki rolls in this round.")
         
         #find the second max of keys where values is not an empty list
-        second_maki = max([key for key in self.maki_tally if self.maki_tally[key] != [] if key < most_maki])
+        try:
+            second_maki = max([key for key in self.maki_tally if self.maki_tally[key] != [] if key < most_maki])
+        except:
+            second_maki = 0
         
         #only add points if the players with the second most maki had more than 0 maki rolls and there were no ties for the most maki
         if second_maki > 0 and most_maki_num == 1:
             second_maki_num = len(self.maki_tally[second_maki])
             ending_list = [", ", ", ", ", ", " and ", ""]
             
-            #for player in the list of players with the most puddings, add points to their round_score
+            #for player in the list of players with the most maki, add points to their round_score
             for player in self.maki_tally[second_maki]:
                 player.round_score += int(3/second_maki_num)
                 ending = ending_list.pop(5-second_maki_num)
